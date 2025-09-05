@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Futuristic Clock</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #0f0c29);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+.clock-container {
+    position: relative;
+    text-align: center;
+    padding: 50px 90px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 0 50px #0ff, 0 0 100px #0ff inset;
+    animation: pulse 2.5s infinite alternate;
+    cursor: pointer;
+}
+
+@keyframes pulse {
+    0% {box-shadow: 0 0 50px #0ff, 0 0 100px #0ff inset;}
+    100% {box-shadow: 0 0 90px #ff00ff, 0 0 180px #ff00ff inset;}
+}
+
+.clock {
+    color: #0ff;
+    font-size: 90px;
+    letter-spacing: 8px;
+    text-shadow: 0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;
+    animation: glowPulse 1.5s ease-in-out infinite alternate;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes glowPulse {
+    0% {text-shadow: 0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #0ff;}
+    100% {text-shadow: 0 0 10px #ff0,0 0 20px #ff0,0 0 40px #ff0,0 0 80px #ff0;}
+}
+
+.clock:hover {
+    transform: scale(1.15) rotateZ(3deg);
+    color: #ff0;
+    text-shadow: 0 0 15px #ff0,0 0 30px #ff0,0 0 60px #ff0,0 0 120px #ff0;
+}
+
+.am-pm {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #fff;
+    text-shadow: 0 0 10px #fff;
+    z-index: 3;
+}
+
+.ring {
+    position: absolute;
+    border: 2px solid #0ff;
+    border-radius: 50%;
+    width: 220px;
+    height: 220px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 12s linear infinite;
+    box-shadow: 0 0 20px #0ff,0 0 50px #0ff;
+    z-index: 1;
+}
+
+@keyframes spin {
+    0% {transform: translate(-50%, -50%) rotate(0deg);}
+    100% {transform: translate(-50%, -50%) rotate(360deg);}
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.7);
+    pointer-events: none;
+    animation: float linear infinite;
+}
+
+@keyframes float {
+    0% {transform: translateY(0) translateX(0);}
+    50% {transform: translateY(-300px) translateX(100px);}
+    100% {transform: translateY(-600px) translateX(-100px);}
+}
+
+.glitch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #0ff;
+    text-shadow: 2px 0 #ff0, -2px 0 #f0f;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitchAnim 1s infinite linear alternate-reverse;
+    z-index: 4;
+}
+
+@keyframes glitchAnim {
+    0% {clip: rect(0, 9999px, 0, 0);}
+    10% {clip: rect(10px, 9999px, 60px, 0);}
+    20% {clip: rect(50px, 9999px, 90px, 0);}
+    30% {clip: rect(20px, 9999px, 80px, 0);}
+    40% {clip: rect(80px, 9999px, 120px, 0);}
+    50% {clip: rect(10px, 9999px, 50px, 0);}
+    60% {clip: rect(60px, 9999px, 90px, 0);}
+    70% {clip: rect(20px, 9999px, 70px, 0);}
+    80% {clip: rect(0, 9999px, 40px, 0);}
+    90% {clip: rect(30px, 9999px, 80px, 0);}
+    100% {clip: rect(10px, 9999px, 60px, 0);}
+}
+</style>
+</head>
+<body>
+
+<div class="clock-container" id="clock-container">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="am-pm" id="ampm">AM</div>
+    <div class="ring"></div>
+</div>
+
+<script>
+
+for(let i=0;i<100;i++){
+    const particle = document.createElement('div');
+    particle.className='particle';
+    particle.style.left = Math.random()*window.innerWidth+'px';
+    particle.style.top = Math.random()*window.innerHeight+'px';
+    let size = Math.random()*6+2;
+    particle.style.width = size+'px';
+    particle.style.height = size+'px';
+    particle.style.animationDuration = Math.random()*5+3+'s';
+    document.body.appendChild(particle);
+}
+
+
+function updateClock(){
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+    let s = now.getSeconds();
+    let ampm = h>=12?'PM':'AM';
+    h = h%12||12;
+    h=h<10?'0'+h:h;
+    m=m<10?'0'+m:m;
+    s=s<10?'0'+s:s;
+
+    const clock=document.getElementById('clock');
+    clock.textContent=`${h}:${m}:${s}`;
+    document.getElementById('ampm').textContent=ampm;
+
+ 
+    if(Math.random()>0.7){
+        const clone=clock.cloneNode(true);
+        clone.classList.add('glitch');
+        document.getElementById('clock-container').appendChild(clone);
+        setTimeout(()=>clone.remove(),200);
+    }
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+
+document.getElementById('clock-container').addEventListener('click',()=>{
+    const container=document.getElementById('clock-container');
+    container.style.boxShadow=container.style.boxShadow.includes('#ff0')?
+        '0 0 50px #0ff,0 0 100px #0ff inset':
+        '0 0 50px #ff0,0 0 100px #ff0 inset';
+});
+</script>
+</body>
+</html>
